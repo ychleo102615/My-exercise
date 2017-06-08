@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void mergesort(int *array, int size, int loc, int *array2);
+
+int main()
+{
+    
+    int size = 0;
+    printf("enter a size: ");
+    scanf("%i", &size);
+    
+    // initialize an array with random numbers in it.
+    int *base = malloc(sizeof(int)*size);
+    int *pare = malloc(sizeof(int)*size);
+    srand(time(NULL));
+    for(int i=0;i<size;i++)
+    {
+        base[i] = rand()%size;
+    }
+    
+    printf("original:\n");
+    for(int i=0; i<size; i++)
+        printf("%i ", base[i]);
+    printf("\n");   
+    
+    mergesort(base, size, 0, pare);
+    printf("sorted:\n");
+    for(int i=0; i<size; i++)
+        printf("%i ", base[i]);
+    printf("\n");
+    
+    free(base);
+    free(pare);
+       
+    return 0;
+}
+
+void mergesort(int *array, int size, int loc, int *array2)
+{
+    if(size < 2)
+        return;//one element means sorted
+    
+    int middle = size/2;
+    int li = loc, ri = loc+middle;//index
+    int lbound = ri, rbound = loc+size;//boundary
+    
+    //do left
+    mergesort(array, middle, li, array2);
+    //do right
+    mergesort(array, size-middle, ri, array2);
+    
+    //do merge
+    for(int i=loc; i<rbound; i++)
+    {
+        // if one side is clean out
+        if(li == lbound)
+        {
+            for(int j=i; j < rbound; j++, ri++)
+                array2[j] = array[ri];
+            break;
+        }
+        else if(ri == rbound)
+        {
+            for(int j=i; j < rbound; j++, li++)
+                array2[j] = array[li];
+            break;
+        }
+        
+        //both side still remains, it's ok for each side when equall
+        if(array[li] < array[ri])
+        {
+            array2[i] = array[li];
+            li++;
+        }
+        else
+        {
+            array2[i] = array[ri];
+            ri++;
+        }
+    }
+    
+    //this is not good, but simple: always let array be the sorted one and array2 be a buff
+    for(int i=loc; i<rbound; i++)
+        array[i] = array2[i];
+        
+    return;
+}
